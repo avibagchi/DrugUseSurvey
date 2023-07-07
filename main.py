@@ -42,4 +42,3 @@ while count <= 100:
     prompt = "You are " + age + " years old." + " You are a " + race + " " + gender + "."
 
     res = GPT(prompt + "Have you ever used recreational drugs")
-    
