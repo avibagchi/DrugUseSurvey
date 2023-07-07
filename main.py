@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import re
 from fuzzywuzzy import process
 import warnings
+import prompts
+
 warnings.filterwarnings("ignore")
 
 load_dotenv()
@@ -86,9 +88,7 @@ while count <= 100:
     ex = fuzzyMatch(["Yes", "No"], res)
     demographic_arr.append(fuzzyMatch(["Yes", "No"], res))
 
-    new_prompt = prompt + " What types of recreational drugs have you used out of the following choices: " \
-                          "Marijuana, Cocaine, LSD, Ecstasy, Methamphetamine, Non-medical Prescription Drugs. " \
-                          "Only pick one choice."
+    new_prompt = prompt + prompts.drug_use_1
     res = gpt(new_prompt)
 
     choices = [
@@ -101,9 +101,7 @@ while count <= 100:
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
 
-    new_prompt = prompt + " How frequently do you currently use recreational drugs out of the following choices: " \
-                          "Daily, Weekly, Monthly, Less than monthly" \
-                          "Only pick one choice."
+    new_prompt = prompt + prompts.drug_use_2
     res = gpt(new_prompt)
 
     choices = [
@@ -114,9 +112,7 @@ while count <= 100:
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
 
-    new_prompt = prompt + " What is your primary reason for using recreational drugs?" \
-                          "Recreation, Curiosity, Socializing, Stress coping, Peer pressure" \
-                          "Only pick one choice."
+    new_prompt = prompt + prompts.drug_use_3
     res = gpt(new_prompt)
     choices = [
         "Recreation",
@@ -127,13 +123,11 @@ while count <= 100:
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
 
-    new_prompt = prompt + " Are you aware of the potential risks and health consequences associated with drug use?" \
-                          " Only respond Yes or No."
+    new_prompt = prompt + prompts.drug_use_4
     res = gpt(new_prompt)
     demographic_arr.append(fuzzyMatch(["Yes", "No"], res))
 
-    new_prompt = prompt + " Would you be interested in learning more about the risks and health consequences of drug use?" \
-                          " Only respond Yes or No."
+    new_prompt = prompt + prompts.drug_use_5
     res = gpt(new_prompt)
     demographic_arr.append(fuzzyMatch(["Yes", "No"], res))
     df.loc[len(df)] = demographic_arr
