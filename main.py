@@ -110,7 +110,6 @@ while count <= 100:
         "Daily",
         "Weekly",
         "Monthly",
-        "Ecstasy",
         "Less than monthly",
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
