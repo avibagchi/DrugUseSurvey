@@ -10,19 +10,37 @@ warnings.filterwarnings("ignore")
 
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def gpt(prompt):
-    role = "Your job is to fill out a drug use survey."
+class ChatApp:
+    def __init__(self):
+        # Setting the API key to use the OpenAI API
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        self.messages = [
+            {"role": "system", "content": "You are a bot that fills out a drug survey based on a persona."},
+        ]
 
-    messages = [{"role": "system", "content": role},
-              {"role": "user", "content": prompt}]
+    def chat(self, message):
+        self.messages.append({"role": "user", "content": message})
+        print(self.messages)
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=self.messages
+        )
+        self.messages.append({"role": "assistant", "content": response["choices"][0]["message"].content})
+        return response["choices"][0]["message"]["content"]
 
-    output = openai.ChatCompletion.create(
-      model="gpt-4",
-      messages=messages
-    )
-    return output["choices"][0]["message"]["content"]
+
+# def gpt(prompt):
+#     role = "Your job is to fill out a drug use survey."
+#
+#     messages = [{"role": "system", "content": role},
+#               {"role": "user", "content": prompt}]
+#
+#     output = openai.ChatCompletion.create(
+#       model="gpt-4",
+#       messages=messages
+#     )
+#     return output["choices"][0]["message"]["content"]
 
 # def regex (exp, text):
 #     matches = re.findall(exp, text)
@@ -62,16 +80,18 @@ while count <= 100:
     count += 1
     prompt = "You are " + age + " years old." + " You are a " + race + " " + gender + "."
 
+    chat_obj = ChatApp()
+
     new_prompt = prompt + " Have you ever used recreational drugs? Only respond Yes or No"
-    res = gpt(new_prompt)
+    res = chat_obj.chat(new_prompt)
     ex = fuzzyMatch(["Yes", "No"], res)
     demographic_arr.append(fuzzyMatch(["Yes", "No"], res))
 
 
-    new_prompt = prompt + " What types of recreational drugs have you used out of the following choices: " \
+    new_prompt = " What types of recreational drugs have you used out of the following choices: " \
                           "Marijuana, Cocaine, LSD, Ecstasy, Methamphetamine, Non-medical Prescription Drugs. " \
                           "Only pick one choice."
-    res = gpt(new_prompt)
+    res = chat_obj.chat(new_prompt)
     choices = [
         "Marijuana",
         "Cocaine",
@@ -82,10 +102,10 @@ while count <= 100:
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
 
-    new_prompt = prompt + " How frequently do you currently use recreational drugs out of the following choices: " \
+    new_prompt = " How frequently do you currently use recreational drugs out of the following choices: " \
                           "Daily, Weekly, Monthly, Less than monthly" \
                           "Only pick one choice."
-    res = gpt(new_prompt)
+    res = chat_obj.chat(new_prompt)
     choices = [
         "Daily",
         "Weekly",
@@ -95,10 +115,10 @@ while count <= 100:
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
 
-    new_prompt = prompt + " What is your primary reason for using recreational drugs?" \
+    new_prompt = " What is your primary reason for using recreational drugs?" \
                           "Recreation, Curiosity, Socializing, Stress coping, Peer pressure" \
                           "Only pick one choice."
-    res = gpt(new_prompt)
+    res = chat_obj.chat(new_prompt)
     choices = [
         "Recreation",
         "Curiosity",
@@ -108,16 +128,17 @@ while count <= 100:
     ]
     demographic_arr.append(fuzzyMatch(choices, res))
 
-    new_prompt = prompt + " Are you aware of the potential risks and health consequences associated with drug use?" \
+    new_prompt = " Are you aware of the potential risks and health consequences associated with drug use?" \
                           " Only respond Yes or No."
-    res = gpt(new_prompt)
+    res = chat_obj.chat(new_prompt)
     demographic_arr.append(fuzzyMatch(["Yes", "No"], res))
 
-    new_prompt = prompt + " Would you be interested in learning more about the risks and health consequences of drug use?" \
+    new_prompt = " Would you be interested in learning more about the risks and health consequences of drug use?" \
                           " Only respond Yes or No."
-    res = gpt(new_prompt)
+    res = chat_obj.chat(new_prompt)
     demographic_arr.append(fuzzyMatch(["Yes", "No"], res))
     df.loc[len(df)] = demographic_arr
-
-df.to_csv("output.csv")
+    print(df)
+    break
+# df.to_csv("output.csv")
 
